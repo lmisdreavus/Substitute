@@ -18,11 +18,6 @@
 
     <div class="input-group position-relative mb-3">
         <form id="searchForm" class="input-group">
-            <select id="category" class="custom-select">
-                <option value="pokemon">포켓몬</option>
-                <option value="move">기술</option>
-                <option value="ability">특성</option>
-            </select>
             <input type="text" id="search" class="form-control" placeholder="검색어를 입력하세요" onkeyup="showSuggestions()">
             <div class="input-group-append">
                 <button type="submit" class="btn btn-outline-secondary">검색</button>
@@ -58,20 +53,26 @@
         function search(event) {
             event.preventDefault();
             var searchName = document.getElementById("search").value;
-            var category = document.getElementById("category").value;
             var resultDiv = document.getElementById("result");
 
             resultDiv.innerHTML = '';  // Clear any existing results
 
-            var database = databases[category];
+            var found = false;
+            for(var category in databases) {
+                var database = databases[category];
 
-            if(database && database[searchName]) {
-                resultDiv.innerText = category + " : " + searchName;
+                if(database && database[searchName]) {
+                    found = true;
+                    resultDiv.innerText += category + " : " + searchName;
 
-                for(var key in database[searchName]) {
-                    resultDiv.innerHTML += `<p>${key} : ${database[searchName][key]}</p>`;
+                    for(var key in database[searchName]) {
+                        resultDiv.innerHTML += `<p>${key} : ${database[searchName][key]}</p>`;
+                    }
+                    resultDiv.innerHTML += '<hr>';
                 }
-            } else {
+            }
+
+            if(!found) {
                 alert("해당하는 정보를 찾을 수 없습니다.");
             }
 
@@ -80,26 +81,28 @@
 
         function showSuggestions() {
             var input = document.getElementById("search").value.toLowerCase();
-            var category = document.getElementById("category").value;
             var suggestions = document.getElementById("suggestions");
-            var database = databases[category];
 
             // Clear any existing suggestions
             while(suggestions.firstChild) {
                 suggestions.removeChild(suggestions.firstChild);
             }
 
-            if(database) {
-                for(var name in database) {
-                    if(name.toLowerCase().startsWith(input) && input !== '') {
-                        var div = document.createElement("div");
-                        div.textContent = name;
-                        div.setAttribute("class", "list-group-item list-group-item-action");
-                        div.addEventListener("click", function() {
-                            document.getElementById("search").value = this.textContent;
-                            search(new Event('submit'));
-                        });
-                        suggestions.appendChild(div);
+            for(var category in databases) {
+                var database = databases[category];
+
+                if(database) {
+                    for(var name in database) {
+                        if(name.toLowerCase().startsWith(input) && input !== '') {
+                            var div = document.createElement("div");
+                            div.textContent = name;
+                            div.setAttribute("class", "list-group-item list-group-item-action");
+                            div.addEventListener("click", function() {
+                                document.getElementById("search").value = this.textContent;
+                                search(new Event('submit'));
+                            });
+                            suggestions.appendChild(div);
+                        }
                     }
                 }
             }
