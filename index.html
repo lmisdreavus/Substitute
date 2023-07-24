@@ -91,7 +91,7 @@
                     if(data) {
                         // Add a paragraph at the top
                         var topParagraph = document.createElement('p');
-                        topParagraph.textContent = data['top'];
+                        topParagraph.textContent = data['text1'];
                         result.appendChild(topParagraph);
 
                         // Create table for 'pokemon' category
@@ -102,17 +102,17 @@
                             var trHead = document.createElement('tr');
                             var trData = document.createElement('tr');
 
-                            for(var key in data) {
-                                if (key !== 'top' && key !== 'bottom') {
-                                    var th = document.createElement('th');
-                                    th.textContent = key;
-                                    trHead.appendChild(th);
-
-                                    var td = document.createElement('td');
-                                    td.textContent = data[key];
-                                    trData.appendChild(td);
-                                }
+                        for(var key in data) {
+                            if (key !== 'text1' && key !== 'text2') {
+                                var th = document.createElement('th');
+                                th.textContent = key;
+                                trHead.appendChild(th);
+                        
+                                var td = document.createElement('td');
+                                td.textContent = data[key];
+                                trData.appendChild(td);
                             }
+                        }
 
                             table.appendChild(trHead);
                             table.appendChild(trData);
@@ -131,7 +131,7 @@
 
                         // Add a paragraph at the bottom
                         var bottomParagraph = document.createElement('p');
-                        bottomParagraph.textContent = data['bottom'];
+                        bottomParagraph.textContent = data['text2'];
                         result.appendChild(bottomParagraph);
                     }
                 }
