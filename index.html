@@ -6,12 +6,12 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5">포켓몬 검색기</h1>
-        <form class="mt-4" id="search-form" onsubmit="event.preventDefault(); performSearch();">
+        <h1 class="mt-5">Pokemon 검색기</h1>
+        <form class="mt-4" id="search-form" onsubmit="return false;">
             <div class="input-group">
                 <input type="text" id="search" class="form-control" onkeyup="showSuggestions(event)" placeholder="Search...">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" onclick="performSearch()">Search</button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="search()">Search</button>
                 </div>
             </div>
             <div id="suggestions" class="list-group mt-2"></div>
@@ -19,124 +19,7 @@
         <div class="mt-5" id="result"></div>
     </div>
 
-    <script>
-        var databases = {
-            "pokemon": null,
-            "move": null,
-            "ability": null
-        };
-
-        fetch('pokemon.json')
-            .then(response => response.json())
-            .then(data => { databases.pokemon = data; });
-
-        fetch('move.json')
-            .then(response => response.json())
-            .then(data => { databases.move = data; });
-
-        fetch('ability.json')
-            .then(response => response.json())
-            .then(data => { databases.ability = data; });
-
-        function showSuggestions(event) {
-            var input = document.getElementById("search").value.toLowerCase();
-            var suggestions = document.getElementById("suggestions");
-
-            // Enter key is pressed
-            if (event.key === 'Enter') {
-                suggestions.innerHTML = '';
-                performSearch();
-                event.preventDefault();  // Prevent form submission
-                return;
-            }
-
-            while(suggestions.firstChild) {
-                suggestions.removeChild(suggestions.firstChild);
-            }
-
-            for(var category in databases) {
-                var database = databases[category];
-
-                if(database) {
-                    for(var name in database) {
-                        if(name.toLowerCase().startsWith(input) && input !== '') {
-                            var div = document.createElement("div");
-                            div.textContent = name;
-                            div.setAttribute("class", "list-group-item list-group-item-action");
-                            div.addEventListener("click", function() {
-                                document.getElementById("search").value = this.textContent;
-                                performSearch();
-                                suggestions.innerHTML = '';
-                            });
-                            suggestions.appendChild(div);
-                        }
-                    }
-                }
-            }
-        }
-
-        function performSearch() {
-            var input = document.getElementById("search").value.toLowerCase();
-            var result = document.getElementById("result");
-
-            while(result.firstChild) {
-                result.removeChild(result.firstChild);
-            }
-
-            for(var category in databases) {
-                var database = databases[category];
-
-                if(database) {
-                    var data = database[input];
-                    if(data) {
-                        // Add a paragraph at the top
-                        var topParagraph = document.createElement('p');
-                        topParagraph.textContent = data['text1'];
-                        result.appendChild(topParagraph);
-
-                        // Create table for 'pokemon' category
-                        if (category === 'pokemon') {
-                            var table = document.createElement('table');
-                            table.className = 'table table-striped';
-
-                            var trHead = document.createElement('tr');
-                            var trData = document.createElement('tr');
-
-                        for(var key in data) {
-                            if (key !== 'text1' && key !== 'text2') {
-                                var th = document.createElement('th');
-                                th.textContent = key;
-                                trHead.appendChild(th);
-                        
-                                var td = document.createElement('td');
-                                td.textContent = data[key];
-                                trData.appendChild(td);
-                            }
-                        }
-
-                            table.appendChild(trHead);
-                            table.appendChild(trData);
-                            result.appendChild(table);
-                        }
-                        // Non-table data for other categories
-                        else {
-                            for(var key in data) {
-                                if (key !== 'top' && key !== 'bottom') {
-                                    var p = document.createElement("p");
-                                    p.textContent = key + " : " + data[key];
-                                    result.appendChild(p);
-                                }
-                            }
-                        }
-
-                        // Add a paragraph at the bottom
-                        var bottomParagraph = document.createElement('p');
-                        bottomParagraph.textContent = data['text2'];
-                        result.appendChild(bottomParagraph);
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- 참조하려는 자바스크립트 파일 -->
+    <script src="app.js"></script>
 </body>
 </html>
