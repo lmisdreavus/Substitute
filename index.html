@@ -7,11 +7,11 @@
 <body>
     <div class="container">
         <h1 class="mt-5">Pokemon Info</h1>
-        <form class="mt-4" id="search-form" onsubmit="event.preventDefault(); search(event)">
+        <form class="mt-4" id="search-form">
             <div class="input-group">
                 <input type="text" id="search" class="form-control" onkeyup="showSuggestions(event)" placeholder="Search...">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="search()">Search</button>
                 </div>
             </div>
             <div id="suggestions" class="list-group mt-2"></div>
@@ -42,8 +42,11 @@
             var input = document.getElementById("search").value.toLowerCase();
             var suggestions = document.getElementById("suggestions");
 
+            // Enter key is pressed
             if (event.key === 'Enter') {
                 suggestions.innerHTML = '';
+                search();
+                event.preventDefault();  // Prevent form submission
                 return;
             }
 
@@ -62,7 +65,8 @@
                             div.setAttribute("class", "list-group-item list-group-item-action");
                             div.addEventListener("click", function() {
                                 document.getElementById("search").value = this.textContent;
-                                search(new Event('submit'));
+                                search();
+                                suggestions.innerHTML = '';
                             });
                             suggestions.appendChild(div);
                         }
@@ -71,7 +75,7 @@
             }
         }
 
-        function search(event) {
+        function search() {
             var input = document.getElementById("search").value.toLowerCase();
             var result = document.getElementById("result");
 
