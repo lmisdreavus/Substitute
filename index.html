@@ -76,28 +76,51 @@
         }
 
         function search() {
-            var input = document.getElementById("search").value.toLowerCase();
-            var result = document.getElementById("result");
+    var input = document.getElementById("search").value.toLowerCase();
+    var result = document.getElementById("result");
 
-            while(result.firstChild) {
-                result.removeChild(result.firstChild);
-            }
+    while(result.firstChild) {
+        result.removeChild(result.firstChild);
+    }
 
-            for(var category in databases) {
-                var database = databases[category];
+    for(var category in databases) {
+        var database = databases[category];
 
-                if(database) {
-                    var data = database[input];
-                    if(data) {
-                        for(var key in data) {
-                            var p = document.createElement("p");
-                            p.textContent = key + " : " + data[key];
-                            result.appendChild(p);
-                        }
+        if(database) {
+            var data = database[input];
+            if(data) {
+                // Create table for 'pokemon' category
+                if (category === 'pokemon') {
+                    var table = document.createElement('table');
+                    table.className = 'table table-striped';
+                    for(var key in data) {
+                        var tr = document.createElement('tr');
+
+                        var td1 = document.createElement('td');
+                        td1.textContent = key;
+                        tr.appendChild(td1);
+
+                        var td2 = document.createElement('td');
+                        td2.textContent = data[key];
+                        tr.appendChild(td2);
+
+                        table.appendChild(tr);
+                    }
+                    result.appendChild(table);
+                }
+                // Non-table data for other categories
+                else {
+                    for(var key in data) {
+                        var p = document.createElement("p");
+                        p.textContent = key + " : " + data[key];
+                        result.appendChild(p);
                     }
                 }
             }
         }
+    }
+}
+
     </script>
 </body>
 </html>
