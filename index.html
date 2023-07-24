@@ -20,8 +20,8 @@
         <form id="searchForm" class="input-group">
             <select id="category" class="custom-select">
                 <option value="pokemon">포켓몬</option>
-                <option value="skills">기술</option>
-                <option value="traits">특성</option>
+                <option value="move">기술</option>
+                <option value="ability">특성</option>
             </select>
             <input type="text" id="search" class="form-control" placeholder="검색어를 입력하세요" onkeyup="showSuggestions()">
             <div class="input-group-append">
@@ -31,14 +31,13 @@
         <div id="suggestions" class="list-group"></div>
     </div>
 
-    <table class="table table-striped" id="result">
-    </table>
+    <div id="result" class="p-3 border rounded"></div>
 
     <script>
         var databases = {
             'pokemon': null,
-            'skills': null,
-            'traits': null
+            'move': null,
+            'ability': null
         };
 
         fetch('./pokemon.json')
@@ -46,37 +45,31 @@
             .then(data => databases['pokemon'] = data)
             .catch(error => console.error('Error:', error));
 
-        fetch('./skills.json')
+        fetch('./move.json')
             .then(response => response.json())
-            .then(data => databases['skills'] = data)
+            .then(data => databases['move'] = data)
             .catch(error => console.error('Error:', error));
 
-        fetch('./traits.json')
+        fetch('./ability.json')
             .then(response => response.json())
-            .then(data => databases['traits'] = data)
+            .then(data => databases['ability'] = data)
             .catch(error => console.error('Error:', error));
 
         function search(event) {
             event.preventDefault();
             var searchName = document.getElementById("search").value;
             var category = document.getElementById("category").value;
-            var resultTable = document.getElementById("result");
+            var resultDiv = document.getElementById("result");
 
-            while(resultTable.rows.length > 0) {
-                resultTable.deleteRow(0);
-            }
+            resultDiv.innerHTML = '';  // Clear any existing results
 
             var database = databases[category];
 
             if(database && database[searchName]) {
-                var newRow = resultTable.insertRow(-1);
-                newRow.insertCell(0).innerText = category;
-                newRow.insertCell(1).innerText = searchName;
+                resultDiv.innerText = category + " : " + searchName;
 
                 for(var key in database[searchName]) {
-                    newRow = resultTable.insertRow(-1);
-                    newRow.insertCell(0).innerText = key;
-                    newRow.insertCell(1).innerText = database[searchName][key];
+                    resultDiv.innerHTML += `<p>${key} : ${database[searchName][key]}</p>`;
                 }
             } else {
                 alert("해당하는 정보를 찾을 수 없습니다.");
