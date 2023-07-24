@@ -1,129 +1,120 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <title>Pokemon Info</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        #suggestions {
+            margin-top: -1px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: #ddd #ddd transparent transparent;
+            position: absolute;
+            background-color: white;
+            cursor: pointer;
+        }
+        .suggest-items {
+            padding: 10px;
+            font-size: 18px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5">Pokemon 검색기</h1>
-        <form class="mt-4" id="search-form" onsubmit="return false;">
-            <div class="input-group">
-                <input type="text" id="search" class="form-control" onkeyup="showSuggestions(event)" placeholder="Search...">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" onclick="search()">Search</button>
-                </div>
-            </div>
-            <div id="suggestions" class="list-group mt-2"></div>
+        <h1 class="mt-5 mb-5">Pokemon Search</h1>
+        <form id="search-form" class="form-inline mb-5">
+            <input id="search-input" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
-        <div class="mt-5" id="result"></div>
+        <div id="suggestions"></div>
+        <div id="result"></div>
     </div>
-
     <script>
-        var databases = {
-            "pokemon": null,
-            "move": null,
-            "ability": null
+        var searchForm = document.getElementById('search-form');
+        var searchInput = document.getElementById('search-input');
+        var suggestions = document.getElementById('suggestions');
+        var result = document.getElementById('result');
+
+        // load data
+        var allData = {};
+        ['pokemon', 'move', 'ability'].forEach(function(category) {
+            fetch(category + '.json')
+                .then(response => response.json())
+                .then(data => allData[category] = data);
+        });
+
+        searchForm.onsubmit = function(event) {
+            event.preventDefault();
+            // clear previous result
+            result.innerHTML = '';
+
+            var input = searchInput.value;
+            ['pokemon', 'move', 'ability'].forEach(function(category) {
+                allData[category].forEach(function(data) {
+                    if (data.name.includes(input)) {
+                        // create a new result item
+                        var item = document.createElement('div');
+
+                        // create a description if present
+                        if (data["설명"]) {
+                            var desc = document.createElement("p");
+                            desc.textContent = data["설명"];
+                            item.appendChild(desc);
+                        }
+                        
+                        var table = document.createElement('table');
+                        var tbody = document.createElement('tbody');
+                        table.className = 'table table-bordered';
+                        
+                        for (var key in data) {
+                            var tr = document.createElement('tr');
+                            var th = document.createElement('th');
+                            var td = document.createElement('td');
+                            th.textContent = key;
+                            td.textContent = data[key];
+                            tr.appendChild(th);
+                            tr.appendChild(td);
+                            tbody.appendChild(tr);
+                        }
+                        table.appendChild(tbody);
+                        item.appendChild(table);
+
+                        result.appendChild(item);
+                    }
+                });
+            });
+            // clear input
+            searchInput.value = '';
+            // clear suggestions
+            clearSuggestions();
         };
 
-        fetch('pokemon.json')
-            .then(response => response.json())
-            .then(data => { databases.pokemon = data; });
+        searchInput.oninput = function(event) {
+            // clear previous suggestions
+            clearSuggestions();
 
-        fetch('move.json')
-            .then(response => response.json())
-            .then(data => { databases.move = data; });
-
-        fetch('ability.json')
-            .then(response => response.json())
-            .then(data => { databases.ability = data; });
-
-        function showSuggestions(event) {
-            var input = document.getElementById("search").value.toLowerCase();
-            var suggestions = document.getElementById("suggestions");
-
-            // Enter key is pressed
-            if (event.key === 'Enter') {
-                suggestions.innerHTML = '';
-                search();
-                event.preventDefault();  // Prevent form submission
-                return;
-            }
-
-            while(suggestions.firstChild) {
-                suggestions.removeChild(suggestions.firstChild);
-            }
-
-            for(var category in databases) {
-                var database = databases[category];
-
-                if(database) {
-                    for(var name in database) {
-                        if(name.toLowerCase().startsWith(input) && input !== '') {
-                            var div = document.createElement("div");
-                            div.textContent = name;
-                            div.setAttribute("class", "list-group-item list-group-item-action");
-                            div.addEventListener("click", function() {
-                                document.getElementById("search").value = this.textContent;
-                                search();
-                                suggestions.innerHTML = '';
-                            });
+            var input = searchInput.value;
+            if (input.length > 0) {
+                ['pokemon', 'move', 'ability'].forEach(function(category) {
+                    allData[category].forEach(function(data) {
+                        if (data.name.includes(input)) {
+                            var div = document.createElement('div');
+                            div.textContent = data.name;
+                            div.className = 'suggest-items';
+                            div.onclick = function(event) {
+                                searchInput.value = div.textContent;
+                                searchForm.onsubmit(event);
+                            };
                             suggestions.appendChild(div);
                         }
-                    }
-                }
+                    });
+                });
             }
+        };
+
+        function clearSuggestions() {
+            suggestions.innerHTML = '';
         }
-
-        function search() {
-    var input = document.getElementById("search").value.toLowerCase();
-    var result = document.getElementById("result");
-
-    while(result.firstChild) {
-        result.removeChild(result.firstChild);
-    }
-
-    for(var category in databases) {
-        var database = databases[category];
-
-        if(database) {
-            var data = database[input];
-            if(data) {
-                // Create table for 'pokemon' category
-                if (category === 'pokemon') {
-                    var table = document.createElement('table');
-                    table.className = 'table table-striped';
-
-                    var trHead = document.createElement('tr');
-                    var trData = document.createElement('tr');
-
-                    for(var key in data) {
-                        var th = document.createElement('th');
-                        th.textContent = key;
-                        trHead.appendChild(th);
-
-                        var td = document.createElement('td');
-                        td.textContent = data[key];
-                        trData.appendChild(td);
-                    }
-
-                    table.appendChild(trHead);
-                    table.appendChild(trData);
-                    result.appendChild(table);
-                }
-                // Non-table data for other categories
-                else {
-                    for(var key in data) {
-                        var p = document.createElement("p");
-                        p.textContent = key + " : " + data[key];
-                        result.appendChild(p);
-                    }
-                }
-            }
-        }
-    }
-}
-
     </script>
 </body>
 </html>
