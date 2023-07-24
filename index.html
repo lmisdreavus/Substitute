@@ -1,89 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>포켓몬 검색</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <style>
-        #suggestions {
-            position: absolute;
-            width: 100%;
-            z-index: 100;
-            top: 38px;  /* Adjust this value as needed */
-        }
-    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Pokemon Info</title>
 </head>
-<body class="container pt-4">
-    <h1 class="text-center mb-4">포켓몬 검색</h1>
-
-    <div class="input-group position-relative mb-3">
-        <form id="searchForm" class="input-group">
-            <input type="text" id="search" class="form-control" placeholder="검색어를 입력하세요" onkeyup="showSuggestions()">
-            <div class="input-group-append">
-                <button type="submit" class="btn btn-outline-secondary">검색</button>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Pokemon Info</h1>
+        <form class="mt-4" id="search-form" onsubmit="event.preventDefault(); search(event)">
+            <div class="input-group">
+                <input type="text" id="search" class="form-control" onkeyup="showSuggestions(event)" placeholder="Search...">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">Search</button>
+                </div>
             </div>
+            <div id="suggestions" class="list-group mt-2"></div>
         </form>
-        <div id="suggestions" class="list-group"></div>
+        <div class="mt-5" id="result"></div>
     </div>
-
-    <div id="result" class="p-3 border rounded"></div>
 
     <script>
         var databases = {
-            'pokemon': null,
-            'move': null,
-            'ability': null
+            "pokemon": null,
+            "move": null,
+            "ability": null
         };
 
-        fetch('./pokemon.json')
+        fetch('pokemon.json')
             .then(response => response.json())
-            .then(data => databases['pokemon'] = data)
-            .catch(error => console.error('Error:', error));
+            .then(data => { databases.pokemon = data; });
 
-        fetch('./move.json')
+        fetch('move.json')
             .then(response => response.json())
-            .then(data => databases['move'] = data)
-            .catch(error => console.error('Error:', error));
+            .then(data => { databases.move = data; });
 
-        fetch('./ability.json')
+        fetch('ability.json')
             .then(response => response.json())
-            .then(data => databases['ability'] = data)
-            .catch(error => console.error('Error:', error));
+            .then(data => { databases.ability = data; });
 
-        function search(event) {
-            event.preventDefault();
-            var searchName = document.getElementById("search").value;
-            var resultDiv = document.getElementById("result");
-
-            resultDiv.innerHTML = '';  // Clear any existing results
-
-            var found = false;
-            for(var category in databases) {
-                var database = databases[category];
-
-                if(database && database[searchName]) {
-                    found = true;
-                    resultDiv.innerText += "이름 : " + searchName;
-
-                    for(var key in database[searchName]) {
-                        resultDiv.innerHTML += `<p>${key} : ${database[searchName][key]}</p>`;
-                    }
-                    resultDiv.innerHTML += '<hr>';
-                }
-            }
-
-            if(!found) {
-                alert("해당하는 정보를 찾을 수 없습니다.");
-            }
-
-            document.getElementById('suggestions').innerHTML = '';
-        }
-
-        function showSuggestions() {
+        function showSuggestions(event) {
             var input = document.getElementById("search").value.toLowerCase();
             var suggestions = document.getElementById("suggestions");
 
-            // Clear any existing suggestions
+            if (event.key === 'Enter') {
+                suggestions.innerHTML = '';
+                return;
+            }
+
             while(suggestions.firstChild) {
                 suggestions.removeChild(suggestions.firstChild);
             }
@@ -108,11 +71,29 @@
             }
         }
 
-        document.getElementById('searchForm').addEventListener('submit', function(event){
-            event.preventDefault();
-            search(event);
-            document.getElementById('suggestions').innerHTML = '';
-        });
+        function search(event) {
+            var input = document.getElementById("search").value.toLowerCase();
+            var result = document.getElementById("result");
+
+            while(result.firstChild) {
+                result.removeChild(result.firstChild);
+            }
+
+            for(var category in databases) {
+                var database = databases[category];
+
+                if(database) {
+                    var data = database[input];
+                    if(data) {
+                        for(var key in data) {
+                            var p = document.createElement("p");
+                            p.textContent = key + " : " + data[key];
+                            result.appendChild(p);
+                        }
+                    }
+                }
+            }
+        }
     </script>
 </body>
 </html>
