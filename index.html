@@ -83,11 +83,6 @@
         result.removeChild(result.firstChild);
     }
 
-// 추가
-var desc = document.createElement("p");
-desc.textContent = data["설명"];
-result.appendChild(desc);
-
             
     for(var category in databases) {
         var database = databases[category];
@@ -100,6 +95,11 @@ result.appendChild(desc);
                     var table = document.createElement('table');
                     table.className = 'table table-striped';
 
+                // 추가
+                    var desc = document.createElement("p");
+                    desc.textContent = data["설명"];
+                    result.appendChild(desc);
+                    
                     var trHead = document.createElement('tr');
                     var trData = document.createElement('tr');
 
