@@ -67,11 +67,11 @@
                             var div = document.createElement("div");
                             div.textContent = name;
                             div.setAttribute("class", "list-group-item list-group-item-action");
-                            div.addEventListener("click", function() {
-                                document.getElementById("search").value = this.textContent;
-                                search();
-                                suggestions.innerHTML = '';
-                            });
+                        div.addEventListener("click", function() {
+                            document.getElementById("search").value = this.textContent;
+                            performSearch();
+                            suggestions.innerHTML = '';
+                        });
                             suggestions.appendChild(div);
                         }
                     }
