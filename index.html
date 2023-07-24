@@ -93,19 +93,22 @@
                 if (category === 'pokemon') {
                     var table = document.createElement('table');
                     table.className = 'table table-striped';
-                    for(var key in data) {
-                        var tr = document.createElement('tr');
 
+                    var trHead = document.createElement('tr');
+                    var trData = document.createElement('tr');
+
+                    for(var key in data) {
                         var th = document.createElement('th');
                         th.textContent = key;
-                        tr.appendChild(th);
+                        trHead.appendChild(th);
 
                         var td = document.createElement('td');
                         td.textContent = data[key];
-                        tr.appendChild(td);
-
-                        table.appendChild(tr);
+                        trData.appendChild(td);
                     }
+
+                    table.appendChild(trHead);
+                    table.appendChild(trData);
                     result.appendChild(table);
                 }
                 // Non-table data for other categories
