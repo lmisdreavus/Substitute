@@ -2,12 +2,12 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <title>포켓몬 Info</title>
+    <title>Pokemon Info</title>
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5">Pokemon 검색기</h1>
-        <form class="mt-4" id="search-form" onsubmit="return false;">
+        <h1 class="mt-5">포켓몬 검색기</h1>
+        <form class="mt-4" id="search-form" onsubmit="event.preventDefault(); performSearch();">
             <div class="input-group">
                 <input type="text" id="search" class="form-control" onkeyup="showSuggestions(event)" placeholder="Search...">
                 <div class="input-group-append">
@@ -26,7 +26,6 @@
             "ability": null
         };
 
-        // 각각의 json 파일에서 데이터를 불러옵니다.
         fetch('pokemon.json')
             .then(response => response.json())
             .then(data => { databases.pokemon = data; });
@@ -39,25 +38,22 @@
             .then(response => response.json())
             .then(data => { databases.ability = data; });
 
-        // 사용자가 입력하는 글자에 따라 제안된 검색어를 보여줍니다.
         function showSuggestions(event) {
             var input = document.getElementById("search").value.toLowerCase();
             var suggestions = document.getElementById("suggestions");
 
-            // Enter 키가 눌렸을 때 제안 목록을 지우고 검색합니다.
+            // Enter key is pressed
             if (event.key === 'Enter') {
                 suggestions.innerHTML = '';
-                search();
-                event.preventDefault();  // 폼 제출을 방지합니다.
+                performSearch();
+                event.preventDefault();  // Prevent form submission
                 return;
             }
 
-            // 제안 목록을 초기화합니다.
             while(suggestions.firstChild) {
                 suggestions.removeChild(suggestions.firstChild);
             }
 
-            // 각각의 데이터베이스에서 검색어와 일치하는 항목을 찾아 제안 목록에 추가합니다.
             for(var category in databases) {
                 var database = databases[category];
 
@@ -67,11 +63,11 @@
                             var div = document.createElement("div");
                             div.textContent = name;
                             div.setAttribute("class", "list-group-item list-group-item-action");
-                        div.addEventListener("click", function() {
-                            document.getElementById("search").value = this.textContent;
-                            performSearch();
-                            suggestions.innerHTML = '';
-                        });
+                            div.addEventListener("click", function() {
+                                document.getElementById("search").value = this.textContent;
+                                performSearch();
+                                suggestions.innerHTML = '';
+                            });
                             suggestions.appendChild(div);
                         }
                     }
@@ -79,60 +75,68 @@
             }
         }
 
-        // 사용자가 입력한 검색어에 해당하는 결과를 보여줍니다.
-function performSearch() {
-    var input = document.getElementById("search").value.toLowerCase();
-    var result = document.getElementById("result");
+        function performSearch() {
+            var input = document.getElementById("search").value.toLowerCase();
+            var result = document.getElementById("result");
 
-    while(result.firstChild) {
-        result.removeChild(result.firstChild);
-    }
+            while(result.firstChild) {
+                result.removeChild(result.firstChild);
+            }
 
-    for(var category in databases) {
-        var database = databases[category];
+            for(var category in databases) {
+                var database = databases[category];
 
-        if(database) {
-            var data = database[input];
-            if(data) {
-                // Create paragraph for text1
-                var p1 = document.createElement("p");
-                p1.textContent = data["text1"];
-                result.appendChild(p1);
+                if(database) {
+                    var data = database[input];
+                    if(data) {
+                        // Add a paragraph at the top
+                        var topParagraph = document.createElement('p');
+                        topParagraph.textContent = data['top'];
+                        result.appendChild(topParagraph);
 
-                // 'pokemon' category table
-                if (category === 'pokemon') {
-                    var table = document.createElement('table');
-                    table.className = 'table table-striped';
+                        // Create table for 'pokemon' category
+                        if (category === 'pokemon') {
+                            var table = document.createElement('table');
+                            table.className = 'table table-striped';
 
-                    var trHead = document.createElement('tr');
-                    var trData = document.createElement('tr');
+                            var trHead = document.createElement('tr');
+                            var trData = document.createElement('tr');
 
-                    for(var key in data) {
-                        if(key !== "text1" && key !== "text2") {
-                            var th = document.createElement('th');
-                            th.textContent = key;
-                            trHead.appendChild(th);
+                            for(var key in data) {
+                                if (key !== 'top' && key !== 'bottom') {
+                                    var th = document.createElement('th');
+                                    th.textContent = key;
+                                    trHead.appendChild(th);
 
-                            var td = document.createElement('td');
-                            td.textContent = data[key];
-                            trData.appendChild(td);
+                                    var td = document.createElement('td');
+                                    td.textContent = data[key];
+                                    trData.appendChild(td);
+                                }
+                            }
+
+                            table.appendChild(trHead);
+                            table.appendChild(trData);
+                            result.appendChild(table);
                         }
+                        // Non-table data for other categories
+                        else {
+                            for(var key in data) {
+                                if (key !== 'top' && key !== 'bottom') {
+                                    var p = document.createElement("p");
+                                    p.textContent = key + " : " + data[key];
+                                    result.appendChild(p);
+                                }
+                            }
+                        }
+
+                        // Add a paragraph at the bottom
+                        var bottomParagraph = document.createElement('p');
+                        bottomParagraph.textContent = data['bottom'];
+                        result.appendChild(bottomParagraph);
                     }
-
-                    table.appendChild(trHead);
-                    table.appendChild(trData);
-                    result.appendChild(table);
                 }
-
-                // Create paragraph for text2
-                var p2 = document.createElement("p");
-                p2.textContent = data["text2"];
-                result.appendChild(p2);
             }
         }
-    }
-}
-
     </script>
 </body>
 </html>
