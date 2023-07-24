@@ -4,17 +4,26 @@
     <title>포켓몬 검색</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        #suggestions {
+            position: absolute;
+            width: 100%;
+            z-index: 100;
+        }
+    </style>
 </head>
 <body class="container pt-4">
     <h1 class="text-center mb-4">포켓몬 검색</h1>
 
-    <form id="searchForm" class="input-group mb-3">
-        <input type="text" id="search" class="form-control" placeholder="포켓몬 이름을 입력하세요" onkeyup="showSuggestions()">
-        <div class="input-group-append">
-            <button type="submit" class="btn btn-outline-secondary">검색</button>
-        </div>
+    <div class="input-group position-relative mb-3">
+        <form id="searchForm" class="input-group">
+            <input type="text" id="search" class="form-control" placeholder="포켓몬 이름을 입력하세요" onkeyup="showSuggestions()">
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-outline-secondary">검색</button>
+            </div>
+        </form>
         <div id="suggestions" class="list-group"></div>
-    </form>
+    </div>
 
     <table class="table table-striped" id="result">
     </table>
