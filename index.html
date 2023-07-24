@@ -96,13 +96,13 @@
                     for(var key in data) {
                         var tr = document.createElement('tr');
 
-                        var td1 = document.createElement('td');
-                        td1.textContent = key;
-                        tr.appendChild(td1);
+                        var th = document.createElement('th');
+                        th.textContent = key;
+                        tr.appendChild(th);
 
-                        var td2 = document.createElement('td');
-                        td2.textContent = data[key];
-                        tr.appendChild(td2);
+                        var td = document.createElement('td');
+                        td.textContent = data[key];
+                        tr.appendChild(td);
 
                         table.appendChild(tr);
                     }
