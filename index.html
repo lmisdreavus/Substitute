@@ -7,6 +7,19 @@
 <body>
     <div class="container">
         <h1 class="mt-5">Pokemon 검색기</h1>
+        <!-- 상단바 코드 -->
+        <ul class="nav nav-tabs mt-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="egg_groups.html">알그룹</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="speed_calculator.html">스피드 계산기</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="terra_raid.html">테라레이드</a>
+            </li>
+        </ul>
+        
         <form class="mt-4" id="search-form" onsubmit="return false;">
             <div class="input-group">
                 <input type="text" id="search" class="form-control" onkeyup="showSuggestions(event)" placeholder="Search...">
