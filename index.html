@@ -18,7 +18,12 @@
 
     <div class="input-group position-relative mb-3">
         <form id="searchForm" class="input-group">
-            <input type="text" id="search" class="form-control" placeholder="포켓몬 이름을 입력하세요" onkeyup="showSuggestions()">
+            <select id="category" class="custom-select">
+                <option value="pokemon">포켓몬</option>
+                <option value="skills">기술</option>
+                <option value="traits">특성</option>
+            </select>
+            <input type="text" id="search" class="form-control" placeholder="검색어를 입력하세요" onkeyup="showSuggestions()">
             <div class="input-group-append">
                 <button type="submit" class="btn btn-outline-secondary">검색</button>
             </div>
@@ -30,25 +35,42 @@
     </table>
 
     <script>
-        var database;
+        var databases = {
+            'pokemon': null,
+            'skills': null,
+            'traits': null
+        };
 
-        fetch('./data.json')
+        fetch('./pokemon.json')
             .then(response => response.json())
-            .then(data => database = data)
+            .then(data => databases['pokemon'] = data)
+            .catch(error => console.error('Error:', error));
+
+        fetch('./skills.json')
+            .then(response => response.json())
+            .then(data => databases['skills'] = data)
+            .catch(error => console.error('Error:', error));
+
+        fetch('./traits.json')
+            .then(response => response.json())
+            .then(data => databases['traits'] = data)
             .catch(error => console.error('Error:', error));
 
         function search(event) {
             event.preventDefault();
             var searchName = document.getElementById("search").value;
+            var category = document.getElementById("category").value;
             var resultTable = document.getElementById("result");
 
             while(resultTable.rows.length > 0) {
                 resultTable.deleteRow(0);
             }
 
-            if(database[searchName]) {
+            var database = databases[category];
+
+            if(database && database[searchName]) {
                 var newRow = resultTable.insertRow(-1);
-                newRow.insertCell(0).innerText = "포켓몬";
+                newRow.insertCell(0).innerText = category;
                 newRow.insertCell(1).innerText = searchName;
 
                 for(var key in database[searchName]) {
@@ -57,7 +79,7 @@
                     newRow.insertCell(1).innerText = database[searchName][key];
                 }
             } else {
-                alert("해당하는 포켓몬을 찾을 수 없습니다.");
+                alert("해당하는 정보를 찾을 수 없습니다.");
             }
 
             document.getElementById('suggestions').innerHTML = '';
@@ -65,23 +87,27 @@
 
         function showSuggestions() {
             var input = document.getElementById("search").value.toLowerCase();
+            var category = document.getElementById("category").value;
             var suggestions = document.getElementById("suggestions");
+            var database = databases[category];
 
             // Clear any existing suggestions
             while(suggestions.firstChild) {
                 suggestions.removeChild(suggestions.firstChild);
             }
 
-            for(var name in database) {
-                if(name.toLowerCase().startsWith(input) && input !== '') {
-                    var div = document.createElement("div");
-                    div.textContent = name;
-                    div.setAttribute("class", "list-group-item list-group-item-action");
-                    div.addEventListener("click", function() {
-                        document.getElementById("search").value = this.textContent;
-                        search(new Event('submit'));
-                    });
-                    suggestions.appendChild(div);
+            if(database) {
+                for(var name in database) {
+                    if(name.toLowerCase().startsWith(input) && input !== '') {
+                        var div = document.createElement("div");
+                        div.textContent = name;
+                        div.setAttribute("class", "list-group-item list-group-item-action");
+                        div.addEventListener("click", function() {
+                            document.getElementById("search").value = this.textContent;
+                            search(new Event('submit'));
+                        });
+                        suggestions.appendChild(div);
+                    }
                 }
             }
         }
