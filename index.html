@@ -9,10 +9,11 @@
     <h1 class="text-center mb-4">포켓몬 검색</h1>
 
     <form id="searchForm" class="input-group mb-3">
-        <input type="text" id="search" class="form-control" placeholder="포켓몬 이름을 입력하세요">
+        <input type="text" id="search" class="form-control" placeholder="포켓몬 이름을 입력하세요" onkeyup="showSuggestions()">
         <div class="input-group-append">
             <button type="submit" class="btn btn-outline-secondary">검색</button>
         </div>
+        <div id="suggestions" class="list-group"></div>
     </form>
 
     <table class="table table-striped" id="result">
@@ -47,6 +48,29 @@
                 }
             } else {
                 alert("해당하는 포켓몬을 찾을 수 없습니다.");
+            }
+        }
+
+        function showSuggestions() {
+            var input = document.getElementById("search").value.toLowerCase();
+            var suggestions = document.getElementById("suggestions");
+
+            // Clear any existing suggestions
+            while(suggestions.firstChild) {
+                suggestions.removeChild(suggestions.firstChild);
+            }
+
+            for(var name in database) {
+                if(name.toLowerCase().startsWith(input) && input !== '') {
+                    var div = document.createElement("div");
+                    div.textContent = name;
+                    div.setAttribute("class", "list-group-item list-group-item-action");
+                    div.addEventListener("click", function() {
+                        document.getElementById("search").value = this.textContent;
+                        search(new Event('submit'));
+                    });
+                    suggestions.appendChild(div);
+                }
             }
         }
 
