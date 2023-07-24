@@ -83,6 +83,12 @@
         result.removeChild(result.firstChild);
     }
 
+// 추가
+var desc = document.createElement("p");
+desc.textContent = data["설명"];
+result.appendChild(desc);
+
+            
     for(var category in databases) {
         var database = databases[category];
 
