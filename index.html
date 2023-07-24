@@ -1,63 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>포</title>
-
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        .suggestions {
-            position: absolute;
-            border: 1px solid #d4d4d4;
-            border-bottom: none;
-            border-top: none;
-            z-index: 99;
-            top: 100%;
-            left: 0;
-            right: 0;
-        }
-
-        .suggestions div {
-            padding: 10px 20px;
-            cursor: pointer;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .suggestions .selected {
-            background-color: #d4d4d4;
-        }
-    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Pokemon Info</title>
 </head>
 <body>
-    <div class="container mt-5">
-        <form id="searchForm" onsubmit="event.preventDefault(); search()">
-            <input type="text" id="search" class="form-control" placeholder="Search" autocomplete="off" onkeyup="suggestions(this.value)">
-            <div class="suggestions" id="suggestions"></div>
+    <div class="container">
+        <h1 class="mt-5">Pokemon 검색기</h1>
+        <form class="mt-4" id="search-form" onsubmit="return false;">
+            <div class="input-group">
+                <input type="text" id="search" class="form-control" onkeyup="showSuggestions(event)" placeholder="Search...">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="search()">Search</button>
+                </div>
+            </div>
+            <div id="suggestions" class="list-group mt-2"></div>
         </form>
-        <div id="result" class="mt-3"></div>
+        <div class="mt-5" id="result"></div>
     </div>
 
     <script>
         var databases = {
-            'pokemon': null,
-            'move': null,
-            'ability': null
+            "pokemon": null,
+            "move": null,
+            "ability": null
         };
 
-        // Load all databases
-        for(var category in databases) {
-            loadDatabase(category);
-        }
+        fetch('pokemon.json')
+            .then(response => response.json())
+            .then(data => { databases.pokemon = data; });
 
-        function loadDatabase(category) {
-            fetch(category + '.json')
-                .then(response => response.json())
-                .then(data => databases[category] = data);
+        fetch('move.json')
+            .then(response => response.json())
+            .then(data => { databases.move = data; });
+
+        fetch('ability.json')
+            .then(response => response.json())
+            .then(data => { databases.ability = data; });
+
+        function showSuggestions(event) {
+            var input = document.getElementById("search").value.toLowerCase();
+            var suggestions = document.getElementById("suggestions");
+
+            // Enter key is pressed
+            if (event.key === 'Enter') {
+                suggestions.innerHTML = '';
+                search();
+                event.preventDefault();  // Prevent form submission
+                return;
+            }
+
+            while(suggestions.firstChild) {
+                suggestions.removeChild(suggestions.firstChild);
+            }
+
+            for(var category in databases) {
+                var database = databases[category];
+
+                if(database) {
+                    for(var name in database) {
+                        if(name.toLowerCase().startsWith(input) && input !== '') {
+                            var div = document.createElement("div");
+                            div.textContent = name;
+                            div.setAttribute("class", "list-group-item list-group-item-action");
+                            div.addEventListener("click", function() {
+                                document.getElementById("search").value = this.textContent;
+                                search();
+                                suggestions.innerHTML = '';
+                            });
+                            suggestions.appendChild(div);
+                        }
+                    }
+                }
+            }
         }
 
         function search() {
@@ -109,40 +124,6 @@
             }
         }
 
-        function suggestions(searchText) {
-            var suggestions = document.getElementById('suggestions');
-
-            while(suggestions.firstChild) {
-                suggestions.removeChild(suggestions.firstChild);
-            }
-
-            if(searchText.length === 0) {
-                return;
-            }
-
-            var searchLower = searchText.toLowerCase();
-
-            for(var category in databases) {
-                var database = databases[category];
-
-                if(database) {
-                    for(var key in database) {
-                        if(key.includes(searchLower)) {
-                            var div = document.createElement("div");
-                            div.textContent = key;
-                            div.addEventListener('click', function() {
-                                document.getElementById('search').value = this.textContent;
-                                search();
-                                while(suggestions.firstChild) {
-                                    suggestions.removeChild(suggestions.firstChild);
-                                }
-                            });
-                            suggestions.appendChild(div);
-                        }
-                    }
-                }
-            }
-        }
     </script>
 </body>
 </html>
