@@ -8,12 +8,12 @@
 <body class="container pt-4">
     <h1 class="text-center mb-4">포켓몬 검색</h1>
 
-    <div class="input-group mb-3">
+    <form id="searchForm" class="input-group mb-3" onsubmit="event.preventDefault(); search();">
         <input type="text" id="search" class="form-control" placeholder="포켓몬 이름을 입력하세요">
         <div class="input-group-append">
-            <button onclick="search()" class="btn btn-outline-secondary">검색</button>
+            <button type="submit" class="btn btn-outline-secondary">검색</button>
         </div>
-    </div>
+    </form>
 
     <table class="table table-striped" id="result">
     </table>
