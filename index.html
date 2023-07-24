@@ -1,16 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokemon Search</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-        #result {
-            margin-top: 20px;
+        .suggestions {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
         }
-        .suggestion {
+
+        .suggestions div {
+            padding: 10px 20px;
             cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .suggestions .selected {
+            background-color: #d4d4d4;
         }
     </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <form id="searchForm" onsubmit="event.preventDefault(); search()">
+            <input type="text" id="search" class="form-control" placeholder="Search" autocomplete="off" onkeyup="suggestions(this.value)">
+            <div class="suggestions" id="suggestions"></div>
+        </form>
+        <div id="result" class="mt-3"></div>
+    </div>
+
     <script>
         var databases = {
             'pokemon': null,
@@ -18,59 +49,20 @@
             'ability': null
         };
 
-        window.onload = function() {
-            // Fetch data for each category from respective JSON file
-            for(var category in databases) {
-                fetch(category + '.json')
-                .then(response => response.json())
-                .then(data => {
-                    databases[category] = data;
-                });
-            }
-
-            var searchElement = document.getElementById('search');
-            searchElement.addEventListener('input', suggest);
-            searchElement.addEventListener('keydown', handleKeyDown);
-        };
-
-        function handleKeyDown(e) {
-            if(e.key === 'Enter') {
-                e.preventDefault(); 
-                search();
-                clearSuggestions();
-            }
+        // Load all databases
+        for(var category in databases) {
+            loadDatabase(category);
         }
 
-        function suggest() {
-            var input = document.getElementById('search').value.toLowerCase();
-            var suggestions = document.getElementById('suggestions');
-
-            clearSuggestions();
-
-            for(var category in databases) {
-                var database = databases[category];
-
-                if(database) {
-                    for(var key in database) {
-                        if(key.startsWith(input)) {
-                            var div = document.createElement('div');
-                            div.textContent = key;
-                            div.className = 'suggestion';
-                            div.onclick = function() {
-                                document.getElementById('search').value = this.textContent;
-                                search();
-                                clearSuggestions();
-                            };
-                            suggestions.appendChild(div);
-                        }
-                    }
-                }
-            }
+        function loadDatabase(category) {
+            fetch(category + '.json')
+                .then(response => response.json())
+                .then(data => databases[category] = data);
         }
 
         function search() {
-            var input = document.getElementById('search').value.toLowerCase();
-            var result = document.getElementById('result');
+            var input = document.getElementById("search").value.toLowerCase();
+            var result = document.getElementById("result");
 
             while(result.firstChild) {
                 result.removeChild(result.firstChild);
@@ -107,7 +99,7 @@
                         // Non-table data for other categories
                         else {
                             for(var key in data) {
-                                var p = document.createElement('p');
+                                var p = document.createElement("p");
                                 p.textContent = key + " : " + data[key];
                                 result.appendChild(p);
                             }
@@ -117,28 +109,40 @@
             }
         }
 
-        function clearSuggestions() {
+        function suggestions(searchText) {
             var suggestions = document.getElementById('suggestions');
 
             while(suggestions.firstChild) {
                 suggestions.removeChild(suggestions.firstChild);
             }
+
+            if(searchText.length === 0) {
+                return;
+            }
+
+            var searchLower = searchText.toLowerCase();
+
+            for(var category in databases) {
+                var database = databases[category];
+
+                if(database) {
+                    for(var key in database) {
+                        if(key.includes(searchLower)) {
+                            var div = document.createElement("div");
+                            div.textContent = key;
+                            div.addEventListener('click', function() {
+                                document.getElementById('search').value = this.textContent;
+                                search();
+                                while(suggestions.firstChild) {
+                                    suggestions.removeChild(suggestions.firstChild);
+                                }
+                            });
+                            suggestions.appendChild(div);
+                        }
+                    }
+                }
+            }
         }
     </script>
-</head>
-<body>
-    <div class="container">
-        <h1 class="text-center my-4">Pokemon Search</h1>
-        <form onsubmit="event.preventDefault();">
-            <div class="input-group">
-                <input type="text" id="search" class="form-control" placeholder="Search...">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" onclick="search(); clearSuggestions();">Search</button>
-                </div>
-            </div>
-            <div id="suggestions" class="border border-secondary mt-2 p-2" style="display: none;"></div>
-        </form>
-        <div id="result"></div>
-    </div>
 </body>
 </html>
