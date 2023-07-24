@@ -9,7 +9,7 @@
             position: absolute;
             width: 100%;
             z-index: 100;
-            top: 38px;
+            top: 38px;  /* Adjust this value as needed */
         }
     </style>
 </head>
@@ -59,6 +59,8 @@
             } else {
                 alert("해당하는 포켓몬을 찾을 수 없습니다.");
             }
+
+            document.getElementById('suggestions').innerHTML = '';
         }
 
         function showSuggestions() {
