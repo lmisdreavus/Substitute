@@ -2,7 +2,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <title>포kemon Info</title>
+    <title>포켓몬 Info</title>
 </head>
 <body>
     <div class="container">
@@ -11,7 +11,7 @@
             <div class="input-group">
                 <input type="text" id="search" class="form-control" onkeyup="showSuggestions(event)" placeholder="Search...">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" onclick="search()">Search</button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="performSearch()">Search</button>
                 </div>
             </div>
             <div id="suggestions" class="list-group mt-2"></div>
@@ -80,7 +80,7 @@
         }
 
         // 사용자가 입력한 검색어에 해당하는 결과를 보여줍니다.
-function search() {
+function performSearch() {
     var input = document.getElementById("search").value.toLowerCase();
     var result = document.getElementById("result");
 
