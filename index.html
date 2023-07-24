@@ -8,7 +8,7 @@
 <body class="container pt-4">
     <h1 class="text-center mb-4">포켓몬 검색</h1>
 
-    <form id="searchForm" class="input-group mb-3" onsubmit="event.preventDefault(); search();">
+    <form id="searchForm" class="input-group mb-3">
         <input type="text" id="search" class="form-control" placeholder="포켓몬 이름을 입력하세요">
         <div class="input-group-append">
             <button type="submit" class="btn btn-outline-secondary">검색</button>
@@ -26,7 +26,8 @@
             .then(data => database = data)
             .catch(error => console.error('Error:', error));
 
-        function search() {
+        function search(event) {
+            event.preventDefault();
             var searchName = document.getElementById("search").value;
             var resultTable = document.getElementById("result");
 
@@ -48,6 +49,8 @@
                 alert("해당하는 포켓몬을 찾을 수 없습니다.");
             }
         }
+
+        document.getElementById('searchForm').addEventListener('submit', search);
     </script>
 </body>
 </html>
