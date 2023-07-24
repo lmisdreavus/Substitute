@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>포켓몬 검색</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body class="container pt-4">
+    <h1 class="text-center mb-4">포켓몬 검색</h1>
+
+    <div class="input-group mb-3">
+        <input type="text" id="search" class="form-control" placeholder="포켓몬 이름을 입력하세요">
+        <div class="input-group-append">
+            <button onclick="search()" class="btn btn-outline-secondary">검색</button>
+        </div>
+    </div>
+
+    <table class="table table-striped" id="result">
+    </table>
+
+    <script>
+        var database;
+
+        fetch('./data.json')
+            .then(response => response.json())
+            .then(data => database = data)
+            .catch(error => console.error('Error:', error));
+
+        function search() {
+            var searchName = document.getElementById("search").value;
+            var resultTable = document.getElementById("result");
+
+            while(resultTable.rows.length > 0) {
+                resultTable.deleteRow(0);
+            }
+
+            if(database[searchName]) {
+                var newRow = resultTable.insertRow(-1);
+                newRow.insertCell(0).innerText = "포켓몬";
+                newRow.insertCell(1).innerText = searchName;
+
+                for(var key in database[searchName]) {
+                    newRow = resultTable.insertRow(-1);
+                    newRow.insertCell(0).innerText = key;
+                    newRow.insertCell(1).innerText = database[searchName][key];
+                }
+            } else {
+                alert("해당하는 포켓몬을 찾을 수 없습니다.");
+            }
+        }
+    </script>
+</body>
+</html>
