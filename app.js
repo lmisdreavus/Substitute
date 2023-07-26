@@ -16,6 +16,8 @@ fetch('ability.json')
     .then(response => response.json())
     .then(data => { databases.ability = data; });
 
+document.querySelector('button').addEventListener('click', search);
+
 function showSuggestions(event) {
     var input = document.getElementById("search").value.toLowerCase();
     var suggestions = document.getElementById("suggestions");
