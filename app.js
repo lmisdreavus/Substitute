@@ -53,7 +53,7 @@ function showSuggestions(event) {
     }
 }
 
-    function search() {
+    window.search = function search() {
         var input = document.getElementById("search").value.toLowerCase();
         var result = document.getElementById("result");
     
