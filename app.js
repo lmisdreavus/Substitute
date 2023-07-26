@@ -109,4 +109,7 @@ function showSuggestions(event) {
             }
         }
     }
-document.getElementById("search-button").addEventListener("click", search);
+
+document.addEventListener("DOMContentLoaded", function(){
+    document.getElementById("search-button").addEventListener("click", search);
+});
