@@ -109,3 +109,4 @@ function showSuggestions(event) {
             }
         }
     }
+document.getElementById("search-button").addEventListener("click", search);
