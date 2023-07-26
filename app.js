@@ -53,56 +53,58 @@ function showSuggestions(event) {
     }
 }
 
-function search() {
-    var input = document.getElementById("search").value.toLowerCase();
-    var result = document.getElementById("result");
-
-    while(result.firstChild) {
-        result.removeChild(result.firstChild);
-    }
-
-    for(var category in databases) {
-        var database = databases[category];
-
-        if(database) {
-            var data = database[input];
-            if(data) {
-                if (category === 'pokemon') {
-                    var text1 = document.createElement("p");
-                    text1.textContent = data.text1;
-                    result.appendChild(text1);
-
-                    var table = document.createElement('table');
-                    table.className = 'table table-striped';
-
-                    var trHead = document.createElement('tr');
-                    var trData = document.createElement('tr');
-
-                    for(var key in data) {
-                        if (key !== 'text1' && key !== 'text2') {
-                            var th = document.createElement('th');
-                            th.textContent = key;
-                            trHead.appendChild(th);
-
-                            var td = document.createElement('td');
-                            td.textContent = data[key];
-                            trData.appendChild(td);
+window.search = function() {
+    function search() {
+        var input = document.getElementById("search").value.toLowerCase();
+        var result = document.getElementById("result");
+    
+        while(result.firstChild) {
+            result.removeChild(result.firstChild);
+        }
+    
+        for(var category in databases) {
+            var database = databases[category];
+    
+            if(database) {
+                var data = database[input];
+                if(data) {
+                    if (category === 'pokemon') {
+                        var text1 = document.createElement("p");
+                        text1.textContent = data.text1;
+                        result.appendChild(text1);
+    
+                        var table = document.createElement('table');
+                        table.className = 'table table-striped';
+    
+                        var trHead = document.createElement('tr');
+                        var trData = document.createElement('tr');
+    
+                        for(var key in data) {
+                            if (key !== 'text1' && key !== 'text2') {
+                                var th = document.createElement('th');
+                                th.textContent = key;
+                                trHead.appendChild(th);
+    
+                                var td = document.createElement('td');
+                                td.textContent = data[key];
+                                trData.appendChild(td);
+                            }
                         }
+    
+                        table.appendChild(trHead);
+                        table.appendChild(trData);
+                        result.appendChild(table);
+    
+                        var text2 = document.createElement("p");
+                        text2.textContent = data.text2;
+                        result.appendChild(text2);
                     }
-
-                    table.appendChild(trHead);
-                    table.appendChild(trData);
-                    result.appendChild(table);
-
-                    var text2 = document.createElement("p");
-                    text2.textContent = data.text2;
-                    result.appendChild(text2);
-                }
-                else {
-                    for(var key in data) {
-                        var p = document.createElement("p");
-                        p.textContent = key + " : " + data[key];
-                        result.appendChild(p);
+                    else {
+                        for(var key in data) {
+                            var p = document.createElement("p");
+                            p.textContent = key + " : " + data[key];
+                            result.appendChild(p);
+                        }
                     }
                 }
             }
