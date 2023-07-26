@@ -53,7 +53,6 @@ function showSuggestions(event) {
     }
 }
 
-window.search = function() {
     function search() {
         var input = document.getElementById("search").value.toLowerCase();
         var result = document.getElementById("result");
@@ -110,4 +109,3 @@ window.search = function() {
             }
         }
     }
-}
