@@ -72,21 +72,29 @@ function showSuggestions(event) {
                         text1.textContent = data.text1;
                         result.appendChild(text1);
 
+                        var img = document.createElement('img');
+                        img.src = data['이미지'];
+                        img.className = "img-fluid rounded"; // Bootstrap class for responsive images
+                        result.appendChild(img);
+                    
+                        var infoDiv = document.createElement('div');
+                        infoDiv.className = "mt-3"; // Bootstrap class for margin top
+                    
+                        // Create detailed info for 'pokemon' category
                         var pType = document.createElement('p');
                         pType.textContent = '타입: ' + data['타입'];
-                        result.appendChild(pType);
+                        infoDiv.appendChild(pType);
                     
                         var pEvolution = document.createElement('p');
                         pEvolution.textContent = '진화: ' + data['진화'];
-                        result.appendChild(pEvolution);
+                        infoDiv.appendChild(pEvolution);
                     
                         var pDescription = document.createElement('p');
                         pDescription.textContent = data['설명'];
-                        result.appendChild(pDescription);
-                        
-                        var img = document.createElement('img');
-                        img.src = data['이미지'];
-                        result.appendChild(img);
+                        pDescription.className = "text-justify"; // Bootstrap class for justified text
+                        infoDiv.appendChild(pDescription);
+                    
+                        result.appendChild(infoDiv);
 
                         var table = document.createElement('table');
                         table.className = 'table table-striped';
