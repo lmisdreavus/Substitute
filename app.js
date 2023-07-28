@@ -71,7 +71,23 @@ function showSuggestions(event) {
                         var text1 = document.createElement("p");
                         text1.textContent = data.text1;
                         result.appendChild(text1);
-    
+
+                        var pType = document.createElement('p');
+                        pType.textContent = '타입: ' + data['타입'];
+                        result.appendChild(pType);
+                    
+                        var pEvolution = document.createElement('p');
+                        pEvolution.textContent = '진화: ' + data['진화'];
+                        result.appendChild(pEvolution);
+                    
+                        var pDescription = document.createElement('p');
+                        pDescription.textContent = data['설명'];
+                        result.appendChild(pDescription);
+                        
+                        var img = document.createElement('img');
+                        img.src = data['이미지'];
+                        result.appendChild(img);
+
                         var table = document.createElement('table');
                         table.className = 'table table-striped';
     
